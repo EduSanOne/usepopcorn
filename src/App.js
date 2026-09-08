@@ -60,10 +60,7 @@ export default function App() {
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const  [selectedId, setSelectedId] = useState(null);
-  
-  const tempQuery = "interstellar";
-
+  const [selectedId, setSelectedId] = useState(null);
   // useEffect(function() {
   //   console.log("After initial render")
   // }, []);
@@ -86,6 +83,10 @@ export default function App() {
 
   function handleCloseMovie() {
     setSelectedId(null);
+  }
+
+  function handleAddWatched(movie) {
+    setWatched((watched) => [...watched, movie])
   }
 
 
@@ -123,8 +124,6 @@ export default function App() {
     fetchMovies();
   }, [query]);
   
- 
-  
   return (
     <>
       <NavBar>
@@ -142,7 +141,12 @@ export default function App() {
 
         <Box>
           {
-          selectedId ? (<MovieDetails selectedId={selectedId} onCloseMovie={handleCloseMovie}/>
+          selectedId ? (
+          <MovieDetails 
+            selectedId={selectedId} 
+            onCloseMovie={handleCloseMovie}
+            onAddWatched={handleAddWatched}
+          />
           ) : (
           <>
             <WatchedSummary watched={watched} />
@@ -273,7 +277,7 @@ function Movie({ movie, onSelectMovie }) {
   );
 }
 
-function MovieDetails({selectedId, onCloseMovie}) {
+function MovieDetails({selectedId, onCloseMovie, onAddWatched}) {
   const [movie, setMovie] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
@@ -290,7 +294,17 @@ function MovieDetails({selectedId, onCloseMovie}) {
     Genre: genre, 
   } = movie;
 
-  console.log(title, year);
+  function handleAdd() {
+    const newWatchedMovie = {
+      imdbID: selectedId,
+      title,
+      year,
+      poster,
+      imdbRating: Number(imdbRating),
+      runtime: Number(runtime.split(" ").at(0))
+    };
+    onAddWatched(newWatchedMovie);
+  }
 
   useEffect(function() {
     setIsLoading(true);
@@ -323,6 +337,7 @@ function MovieDetails({selectedId, onCloseMovie}) {
         <section>
           <div className="rating">
             <StarRating maxRating={10} size={24}/>
+            <button className="btn-add" onClick={handleAdd}>Add to list</button>
           </div>
           <p><em>{plot}</em></p>
           <p>Starring {actors}</p>
