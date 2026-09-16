@@ -95,6 +95,7 @@ export default function App() {
 
 
   useEffect(function () {
+    
     async function fetchMovies() {
       try {
         setIsLoading(true);
@@ -113,7 +114,9 @@ export default function App() {
         console.log(data.Search);
       } catch (err) {
         console.error(err.message);
-        setError(err.message);
+
+          setError(err.message)
+
       } finally {
         setIsLoading(false);
       }
@@ -126,6 +129,9 @@ export default function App() {
     }
 
     fetchMovies();
+
+ 
+
   }, [query]);
   
   return (
@@ -335,6 +341,11 @@ function MovieDetails({selectedId, onCloseMovie, onAddWatched, watched}) {
   useEffect(function() {
     if (!title) return;
     document.title = `Movie | ${title}`;
+
+    return function() {
+      document.title = "usePopcorn";
+      console.log(`Clean up effect for movie ${title}`)
+    };
   }, [title]);
   
   return (
